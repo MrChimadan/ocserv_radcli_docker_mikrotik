@@ -13,6 +13,9 @@ SRV_CN=${HC_SRV_CN:-"www.example.com"}
 SRV_ORG=${HC_SRV_ORG:-"My Company"}
 SRV_DAYS=${HC_SRV_DAYS:-9999}
 NO_TEST_USER=${HC_NO_TEST_USER:-""}
+RAD_SRV=${HC_RAD_SRV:-"127.0.0.1"}
+RAD_SECRET=${HC_RAD_SECRET:-"12345678"}
+VPN_NET=${HC_VPN_NET:-"10.20.30.0/24"}
 
 echo "$(date) [info] The directory with the configuration '${CONF_DIR}' will be used."
 
@@ -87,6 +90,21 @@ if [ -z "${NO_CREATE_SERVER_CERT}" ]; then
 else
 	echo "$(date) [info] Using existing custom certificates."
 fi
+
+#Create radius resver credintal
+
+echo "${RAD_SRV}    ${RAD_SECRET}" > /etc/radcli/servers
+
+
+# Configure radcli
+
+sed -i "s|^authserver.*|authserver   ${RAD_SRV}|" /etc/radcli/radiusclient.conf 
+sed -i "s|^acctserver.*|acctserver   ${RAD_SRV}|" /etc/radcli/radiusclient.conf 
+
+# Configure ocsrv.conf
+
+sed -i "s|^[[:space:]]*default-domain[[:space:]]*=.*|default-domain = ${SRV_CN}|" ${CONF_DIR}/ocserv.conf 
+sed -i "s|^[[:space:]]*ipv4-network[[:space:]]*=.*|ipv4-network = ${VPN_NET}|" ${CONF_DIR}/ocserv.conf 
 
 # Create a test user
 if [ -z "${NO_TEST_USER}" ] && [ ! -f "${CONF_DIR}/ocpasswd" ]; then
