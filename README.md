@@ -2,9 +2,9 @@
 
 
 
-# OpenConnect server (ocserv) docker image (using alpine linux)
+# OpenConnect server (ocserv) docker image (using alpine linux) + radcli (RADIUS auth for MikroTik User Manager)
 
-[![Docker pulls)](https://img.shields.io/docker/pulls/cherts/ocserv.svg)](https://hub.docker.com/r/cherts/ocserv)
+[![Docker pulls)](https://img.shields.io/docker/pulls/chimadan/ocserv-radcli.svg)](https://hub.docker.com/r/chimadan/ocserv-radcli)
 ![LICENSE](https://img.shields.io/github/license/cherts/ocserv_docker)
 
 ocerv_docker is an OpenConnect VPN Server boxed in a Docker image built by [Mikhail Grigorev](mailto:sleuthhound@gmail.com)
@@ -19,33 +19,51 @@ OpenConnect VPN server is an SSL VPN server that is secure, small, fast and conf
 
 ## How is this image different from others?
 
+This project is a fork of an ocserv Docker image with **RADIUS authentication support**, designed specifically for integration with **MikroTik User Manager**.
+
 - Uses the latest version of OpenConnect (v1.4.0);
 - Strong SSL/TLS ciphers are used (see tls-priorities options);
 - Alpine Linux base image is used;
 - Easy customization of the image is possible (changing the directory of the configuration file, TCP and UDP ports and additional options for running ocserv through the variables);
 
-## How to use this image
+The container includes:
+- **radcli** utility
+- **ocserv** built from source with RADIUS authentication support
+- Automatic ocserv configuration for RADIUS-based authentication
 
-Get the docker image by running the following commands:
-```bash
-docker pull cherts/ocserv:latest
-```
+The main goal of this project is to run **OpenConnect VPN (ocserv)** in Docker with authentication and accounting handled by **MikroTik User Manager**.
 
-Start an ocserv instance with minimal and secure configuration:
+---
 
-```bash
-docker run -ti -d --rm --name ocserv \
-	--privileged \
-	-p 443:443 -p 443:443/udp \
-	cherts/ocserv:latest
-```
+## Features
 
-This will start an instance with the a test user named `test` and generated random password.
+- ocserv compiled with:
+  - RADIUS authentication backend
+  - radcli support
+- Compatible with MikroTik User Manager
+- No local user database required
+- Configuration via environment variables
+- Suitable for ISP and enterprise VPN setups
+- Designed for containerized environments
 
-To view the generated password, run the command:
-```bash
-docker logs ocserv | grep "Creating test user"
-```
+---
+
+## Authentication
+
+Authentication is performed via **RADIUS**:
+- Username/password validation
+- Accounting (Start/Stop)
+- Centralized user management in MikroTik User Manager
+
+Local authentication methods are disabled by default.
+
+---
+
+---
+
+## Networking Notes
+
+- NAT should be configured on the **host system**, not inside the container
 
 ### Environment Variables
 
@@ -99,151 +117,16 @@ The default values of the above environment variables:
 | **HC_RAD_SECRET**|    12345678     |
 | **HC_VPN_NET**   |  10.20.30.0/24  |
 
-### Running examples
+---
 
-#### Start an instance out of the box with username `test` and random password
+## Docker Image
 
-```bash
-docker run -ti -d --rm --name ocserv \
-    --privileged \
-    -p 443:443 -p 443:443/udp \
-    cherts/ocserv:latest
-```
+Prebuilt Docker image is available on Docker Hub:
 
-This will start an instance with the a test user named `test` and generated random password.
+https://hub.docker.com/r/chimadan/ocserv-radcli
 
-To view the generated password, run the command:
-```bash
-docker logs ocserv | grep "Creating test user"
-```
+---
 
-#### Start an instance with server name `vpn.myorg.com`, `My Org` and `365` days
+## Disclaimer
 
-```bash
-docker run -ti -d --rm --name ocserv \
-    --privileged \
-    -p 443:443/tcp -p 443:443/udp \
-    -e HC_SRV_CN=vpn.myorg.com \
-    -e HC_SRV_ORG="My Org" \
-    -e HC_SRV_DAYS=365 \
-    cherts/ocserv:latest
-```
-
-#### Start an instance with CA name `My CA`, `My Corp` and `3650` days
-
-```bash
-docker run -ti -d --rm --name ocserv \
-    --privileged \
-    -p 443:443 -p 443:443/udp \
-    -e HC_CA_CN="My CA" \
-    -e HC_CA_ORG="My Corp" \
-    -e HC_CA_DAYS=3650 \
-    cherts/ocserv:latest
-```
-
-A totally customized instance with both CA and server certification
-
-```bash
-docker run -ti -d --rm --name ocserv \
-    --privileged \
-    -p 443:443 -p 443:443/udp \
-    -e HC_CA_CN="My CA" \
-    -e HC_CA_ORG="My Corp" \
-    -e HC_CA_DAYS=3650 \
-    -e HC_SRV_CN=vpn.myorg.com \
-    -e HC_SRV_ORG="My Org" \
-    -e HC_SRV_DAYS=365 \
-    cherts/ocserv:latest
-```
-
-#### Start an instance as above but without test user
-
-```bash
-docker run -ti -d --rm --name ocserv \
-    --privileged \
-    -p 443:443 -p 443:443/udp \
-    -e HC_CA_CN="My CA" \
-    -e HC_CA_ORG="My Corp" \
-    -e HC_CA_DAYS=3650 \
-    -e HC_SRV_CN=vpn.myorg.com \
-    -e HC_SRV_ORG="My Org" \
-    -e HC_SRV_DAYS=365 \
-    -e HC_NO_TEST_USER=1 \
-    -v /some/path/to/ocpasswd:/etc/ocserv/ocpasswd \
-    cherts/ocserv:latest
-```
-
-**WARNING:** The ocserv requires the ocpasswd file to start, if `HC_NO_TEST_USER=1` is provided, there will be no ocpasswd created, which will stop the container immediately after start it. You must specific a ocpasswd file pointed to `/etc/ocserv/ocpasswd` by using the volume argument `-v` by docker as demonstrated above.
-
-#### Start an instance but use docker compose (simple configuration)
-
-```bash
-mkdir ~/ocserv
-curl -s -L https://raw.githubusercontent.com/CHERTS/ocserv_docker/master/deploy/docker-compose.yaml -o ~/ocserv/docker-compose.yaml
-cd ~/ocserv
-docker-compose up -d
-```
-
-#### Start an instance but use docker compose (advanced configuration)
-
-```bash
-git clone https://github.com/CHERTS/ocserv_docker.git
-cd ocserv_docker/examples/
-docker-compose up -d
-docker-compose logs
-```
-
-A container with ocserv will be launched, accepting connections on port 8443, and the `config` directory will be mounted in the container.
-When the container starts, self-signed certificates will be generated.
-There is one user `admin` in the `config/ocpasswd` file (password `admin`).
-You can edit the configuration in the `docker-compose.yaml` and `config/ocserv.conf` files for your tasks.
-
-### User operations
-
-All the users opertaions happened while the container is running. If you used a different container name other than `ocserv`, then you have to change the container name accordingly.
-
-#### Add user
-
-If say, you want to create a user named `jerry`, type the following command
-
-```bash
-docker exec -ti ocserv ocpasswd -c /etc/ocserv/ocpasswd jerry
-Enter password:
-Re-enter password:
-```
-
-When prompt for password, type the password twice, then you will have the user with the password you want.
-
-#### Delete user
-
-Delete user is similar to add user, just add another argument `-d` to the command line
-
-```bash
-docker exec -ti ocserv ocpasswd -c /etc/ocserv/ocpasswd -d test
-```
-
-The above command will delete the default user `test`, if you start the instance without using environment variable `HC_NO_TEST_USER`.
-
-#### Change password
-
-Change password is exactly the same command as add user, please refer to the command mentioned above.
-
-#### View ocserv status
-
-Use occtl in contaner for show status
-
-```bash
-docker exec -ti ocserv occtl show status
-```
-
-You can also use other commands in the occtl utility.
-
-## Build custom image
-
-```
-git clone https://github.com/CHERTS/ocserv_docker.git
-cd ocserv_docker
-_customize_this_image_
-./build.sh
-```
-
+This project is provided as-is. Make sure you understand your security and networking requirements before deploying it in production.
