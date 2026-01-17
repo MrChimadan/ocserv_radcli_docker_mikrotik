@@ -1,6 +1,6 @@
 FROM alpine:3.20
 
-ARG HC_VERSION=1.3.0
+ARG HC_VERSION=1.4.0
 ARG HC_WORKDIR="/etc/ocserv"
 ARG HC_TCP_PORT="443"
 ARG HC_UDP_PORT="443"
@@ -13,7 +13,7 @@ ARG HC_CA_DAYS=9999
 ARG HC_SRV_CN="www.example.com"
 ARG HC_SRV_ORG="My Company"
 ARG HC_SRV_DAYS=9999
-ARG HC_NO_TEST_USER=""
+#ARG HC_NO_TEST_USER=""
 ARG HC_RAD_SRV="127.0.0.1"
 ARG HC_RAD_SECRET="12345678"
 ARG HC_VPN_NET="10.20.30.0/24"
@@ -31,7 +31,7 @@ ENV HC_CA_DAYS $HC_CA_DAYS
 ENV HC_SRV_CN $HC_SRV_CN 
 ENV HC_SRV_ORG $HC_SRV_ORG
 ENV HC_SRV_DAYS $HC_SRV_DAYS
-ENV HC_NO_TEST_USER $HC_NO_TEST_USER
+#ENV HC_NO_TEST_USER $HC_NO_TEST_USER
 ENV HC_RAD_SRV $HC_RAD_SRV
 ENV HC_RAD_SECRET $HC_RAD_SECRET
 ENV HC_VPN_NET $HC_VPN_NET
@@ -81,8 +81,6 @@ RUN buildDeps=" \
 	&& rm -fr /usr/src/radcli \
     && wget -O ocserv.tar.xz "ftp://ftp.infradead.org/pub/ocserv/ocserv-$HC_VERSION.tar.xz" \
     && wget -O ocserv.tar.xz.sig "ftp://ftp.infradead.org/pub/ocserv/ocserv-$HC_VERSION.tar.xz.sig" \
-    #	&& gpg --keyserver pgp.mit.edu --recv-key 96865171 \
-    #	&& gpg --verify ocserv.tar.xz.sig \
     && mkdir -p /usr/src/ocserv \
     && tar -xf ocserv.tar.xz -C /usr/src/ocserv --strip-components=1 \
     && rm -rf ocserv.tar.xz* \

@@ -2,7 +2,7 @@
 
 HCONNECT_WORK_DIR="/etc/ocserv"
 HCONNECT_INFO=(
-    "cherts/ocserv,1.3.0"
+    "cherts/ocserv,1.4.0"
 )
 
 # Check command exist function

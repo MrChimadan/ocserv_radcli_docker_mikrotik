@@ -12,7 +12,7 @@ CA_DAYS=${HC_CA_DAYS:-9999}
 SRV_CN=${HC_SRV_CN:-"www.example.com"}
 SRV_ORG=${HC_SRV_ORG:-"My Company"}
 SRV_DAYS=${HC_SRV_DAYS:-9999}
-NO_TEST_USER=${HC_NO_TEST_USER:-""}
+#NO_TEST_USER=${HC_NO_TEST_USER:-""}
 RAD_SRV=${HC_RAD_SRV:-"127.0.0.1"}
 RAD_SECRET=${HC_RAD_SECRET:-"12345678"}
 VPN_NET=${HC_VPN_NET:-"10.20.30.0/24"}
@@ -91,7 +91,7 @@ else
 	echo "$(date) [info] Using existing custom certificates."
 fi
 
-#Create radius resver credintal
+#Create Radius server credentials
 
 echo "${RAD_SRV}    ${RAD_SECRET}" > /etc/radcli/servers
 
@@ -107,22 +107,22 @@ sed -i "s|^[[:space:]]*default-domain[[:space:]]*=.*|default-domain = ${SRV_CN}|
 sed -i "s|^[[:space:]]*ipv4-network[[:space:]]*=.*|ipv4-network = ${VPN_NET}|" ${CONF_DIR}/ocserv.conf 
 
 # Create a test user
-if [ -z "${NO_TEST_USER}" ] && [ ! -f "${CONF_DIR}/ocpasswd" ]; then
-	TEST_PASSWORD=$(pwgen -c 10 -n 1 2>/dev/null)
-	if [ -n "${TEST_PASSWORD}" ]; then
-		echo -n "${TEST_PASSWORD}" | ocpasswd -c "${CONF_DIR}/ocpasswd" test
-		echo "$(date) [info] Creating test user 'test' with password '${TEST_PASSWORD}'"
-	else
-		echo "$(date) [info] Creating test user 'test' with password 'test'"
-		echo 'test:*:$5$DktJBFKobxCFd7wN$sn.bVw8ytyAaNamO.CvgBvkzDiFR6DaHdUzcif52KK7' > "${CONF_DIR}/ocpasswd"
-	fi
-fi
+# if [ -z "${NO_TEST_USER}" ] && [ ! -f "${CONF_DIR}/ocpasswd" ]; then
+# 	TEST_PASSWORD=$(pwgen -c 10 -n 1 2>/dev/null)
+# 	if [ -n "${TEST_PASSWORD}" ]; then
+# 		echo -n "${TEST_PASSWORD}" | ocpasswd -c "${CONF_DIR}/ocpasswd" test
+# 		echo "$(date) [info] Creating test user 'test' with password '${TEST_PASSWORD}'"
+# 	else
+# 		echo "$(date) [info] Creating test user 'test' with password 'test'"
+# 		echo 'test:*:$5$DktJBFKobxCFd7wN$sn.bVw8ytyAaNamO.CvgBvkzDiFR6DaHdUzcif52KK7' > "${CONF_DIR}/ocpasswd"
+# 	fi
+# fi
 
 echo "$(date) [info] Enable ipv4 forward..."
 sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1
 
-echo "$(date) [info] Enable NAT forwarding, TCP port: ${TCP_PORT}, UDP port: ${UDP_PORT}..."
-iptables -t nat -A POSTROUTING -j MASQUERADE >/dev/null 2>&1
+#echo "$(date) [info] Enable NAT forwarding, TCP port: ${TCP_PORT}, UDP port: ${UDP_PORT}..."
+#iptables -t nat -A POSTROUTING -j MASQUERADE >/dev/null 2>&1
 iptables -A INPUT -p tcp --dport ${TCP_PORT} -j ACCEPT >/dev/null 2>&1
 iptables -A INPUT -p udp --dport ${UDP_PORT} -j ACCEPT >/dev/null 2>&1
 iptables -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu >/dev/null 2>&1

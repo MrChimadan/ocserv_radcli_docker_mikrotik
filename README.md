@@ -73,6 +73,8 @@ All the variables to this image is optional, which means you don't have to type 
 
 `HC_NO_CREATE_SERVER_CERT`, while this variable is set to not empty, the server certificate file will not be created. You have to create your own server certificate file and set path to file into config ocserv (server-cert and server-key option). The default value is to generate server certificate file automaticaly if not exist.
 
+
+
 The default values of the above environment variables:
 
 |   Variable      |     Default     |
