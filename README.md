@@ -1,3 +1,7 @@
+
+
+
+
 # OpenConnect server (ocserv) docker image (using alpine linux)
 
 [![Docker pulls)](https://img.shields.io/docker/pulls/cherts/ocserv.svg)](https://hub.docker.com/r/cherts/ocserv)
@@ -15,7 +19,7 @@ OpenConnect VPN server is an SSL VPN server that is secure, small, fast and conf
 
 ## How is this image different from others?
 
-- Uses the latest version of OpenConnect (v1.3.0);
+- Uses the latest version of OpenConnect (v1.4.0);
 - Strong SSL/TLS ciphers are used (see tls-priorities options);
 - Alpine Linux base image is used;
 - Easy customization of the image is possible (changing the directory of the configuration file, TCP and UDP ports and additional options for running ocserv through the variables);
@@ -67,27 +71,33 @@ All the variables to this image is optional, which means you don't have to type 
 
 `HC_SRV_DAYS`, this is the expiration days used to generate the server certification.
 
-`HC_NO_TEST_USER`, while this variable is set to not empty, the `test` user will not be created. You have to create your own user with password. The default value is to create `test` user with random password.
-
 `HC_NO_CREATE_DH_PARAMS`, while this variable is set to not empty, the DH params file will not be created. You have to create your own DH params file and set path to file into config ocserv (dh-params option). The default value is to generate DH params file automaticaly if not exist.
 
 `HC_NO_CREATE_SERVER_CERT`, while this variable is set to not empty, the server certificate file will not be created. You have to create your own server certificate file and set path to file into config ocserv (server-cert and server-key option). The default value is to generate server certificate file automaticaly if not exist.
+ 
+`HC_RAD_SRV`, Radius server IP address
 
+`HC_RAD_SECRET`, shared secret of the Radius server
+
+`HC_VPN_NET`,  VPN network addressing in CIDR notation.
 
 
 The default values of the above environment variables:
 
-|   Variable      |     Default     |
-|:---------------:|:---------------:|
-|  **HC_WORKDIR** |   /etc/ocserv   |
-|  **HC_TCP_PORT**|       443       |
-|  **HC_UDP_PORT**|       443       |
-|  **HC_CA_CN**   |      VPN CA     |
-|  **HC_CA_ORG**  | My Organization |
-| **HC_CA_DAYS**  |       9999      |
-|  **HC_SRV_CN**  | www.example.com |
-| **HC_SRV_ORG**  |    My Company   |
-| **HC_SRV_DAYS** |       9999      |
+|   Variable       |     Default     |
+|:----------------:|:---------------:|
+|  **HC_WORKDIR**  |   /etc/ocserv   |
+|  **HC_TCP_PORT** |       443       |
+|  **HC_UDP_PORT** |       443       |
+|  **HC_CA_CN**    |      VPN CA     |
+|  **HC_CA_ORG**   | My Organization |
+| **HC_CA_DAYS**   |       9999      |
+|  **HC_SRV_CN**   | www.example.com |
+| **HC_SRV_ORG**   |    My Company   |
+| **HC_SRV_DAYS**  |       9999      |
+| **HC_RAD_SRV**   |    127.0.0.1    |
+| **HC_RAD_SECRET**|    12345678     |
+| **HC_VPN_NET**   |  10.20.30.0/24  |
 
 ### Running examples
 
