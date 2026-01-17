@@ -11,7 +11,7 @@ ocerv_docker is an OpenConnect VPN Server boxed in a Docker image built by [Mikh
 
 ## What is OpenConnect server?
 
-OpenConnect VPN server is an SSL VPN server that is secure, small, fast and configurable. It implements the OpenConnect SSL VPN protocol and has also (currently experimental) compatibility with clients using the AnyConnect SSL VPN protocol. The OpenConnect protocol provides a dual TCP/UDP VPN channel and uses the standard IETF security protocols to secure it. The OpenConnect client is multi-platform and available [here](https://www.infradead.org/openconnect/). Alternatively, you can try connecting using the official Cisco AnyConnect client (Confirmed working with AnyConnect 4.802045).
+OpenConnect VPN server is an SSL VPN server that is secure, small, fast and configurable. It implements the OpenConnect SSL VPN protocol and has also (currently experimental) compatibility with clients using the AnyConnect SSL VPN protocol. The OpenConnect protocol provides a dual TCP/UDP VPN channel and uses the standard IETF security protocols to secure it. The OpenConnect client is multi-platform and available [here](https://www.infradead.org/openconnect/). Alternatively, you can try connecting using the official Cisco AnyConnect client (Confirmed working with AnyConnect 5.1.7.93) and all latest version OpenConnect. 
 
 - [Homepage](https://www.infradead.org/openconnect/)
 - [Documentation](https://ocserv.openconnect-vpn.net/ocserv.8.html)
